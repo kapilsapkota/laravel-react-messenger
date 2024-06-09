@@ -5,10 +5,46 @@ import {useEffect, useRef, useState} from "react";
 import {ChatBubbleLeftRightIcon} from "@heroicons/react/24/solid/index.js";
 import ConversationHeader from "@/Components/App/ConversationHeader.jsx";
 import MessageItem from "@/Components/App/MessageItem.jsx";
+import MessageInput from "@/Components/App/MessageInput.jsx";
+import {useEventBus} from "@/EventBus.jsx";
 function Home({ selectedConversation = null,  messages = null }) {
     const [localMessages, setLocalMessages] = useState([]);
     const messageCtrRef = useRef(null)
+    const { on } = useEventBus()
 
+    const messageCreated = (message) => {
+        if(
+            selectedConversation
+            && selectedConversation.is_group
+            && selectedConversation.id == message.group_id
+        ){
+            setLocalMessages((prevMessages) => [...prevMessages, message])
+        }
+
+        if(
+            selectedConversation
+            && selectedConversation.is_user
+            && (selectedConversation.id == message.sender_id
+                || selectedConversation.id == message.receiver_id)
+        ){
+            setLocalMessages((prevMessages) => [...prevMessages, message])
+        }
+    }
+
+    useEffect(() => {
+        setTimeout(() => {
+            if(messageCtrRef.current){
+                messageCtrRef.current.scrollTop =
+                    messageCtrRef.current.scrollHeight;
+            }
+        },10);
+
+        const offCreated = on('message.created', messageCreated)
+
+        return ()  => {
+            offCreated();
+        };
+    }, [selectedConversation]);
     useEffect(() => {
         setLocalMessages(messages ? messages.data.reverse() : [])
     }, [messages]);
@@ -51,7 +87,7 @@ function Home({ selectedConversation = null,  messages = null }) {
                         )}
                     </div>
 
-                    {/*<MessageInput conversation={selectedConversation} />*/}
+                    <MessageInput conversation={selectedConversation} />
                 </>
             )}
         </>

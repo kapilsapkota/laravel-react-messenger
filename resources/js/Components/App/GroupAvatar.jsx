@@ -1,6 +1,6 @@
 import {UsersIcon} from "@heroicons/react/24/solid/index.js";
 
-const GroupAvatar = ({})  => {
+const GroupAvatar = ()  => {
     return (
         <>
             <div className={`avatar placeholder`}>

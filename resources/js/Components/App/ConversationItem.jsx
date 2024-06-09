@@ -15,12 +15,12 @@ const ConversationItem = ({
         if(!selectedConversation.is_group &&
             !conversation.is_group &&
             selectedConversation.id === conversation.id){
-            classes = 'border-blue-500 bg-black/20'
+            classes = ' border-blue-500 bg-black/20'
         }
         if(selectedConversation.is_group
             && conversation.is_group
             && selectedConversation.id === conversation.id){
-            classes = 'border-blue-500 bg-black/20'
+            classes = ' border-blue-500 bg-black/20'
         }
     }
     return (
