@@ -3,6 +3,7 @@ import {useEffect, useState} from "react";
 import TextInput from "@/Components/TextInput.jsx";
 import {PencilSquareIcon} from "@heroicons/react/16/solid/index.js";
 import ConversationItem from "@/Components/App/ConversationItem.jsx";
+import {useEventBus} from "@/EventBus.jsx";
 const ChartLayout = ({children}) => {
     const page = usePage();
     const conversations = page.props.conversations;
@@ -10,8 +11,8 @@ const ChartLayout = ({children}) => {
     const [localConversations, setLocalConversations] = useState([])
     const [sortedConversations, setSortedConversations] = useState([])
     const [onlineUsers, setOnlineUsers] = useState({})
+    const {on} = useEventBus();
     const isUserOnline = (userId) => onlineUsers[userId]
-
     console.log("conversation", conversations)
     console.log("selectedConversation", selectedConversation)
 
@@ -21,6 +22,44 @@ const ChartLayout = ({children}) => {
             return conversation.name.toLowerCase().includes(search);
         }))
     }
+
+    const messageCreated = (message)  => {
+        setLocalConversations((oldUsers) => {
+            return oldUsers.map((u)=>{
+                if(
+                    message.receiver_id &&
+                    !u.is_group &&
+                    (u.id == message.sender_id || u.id == message.receiver_id)
+                ){
+                    u.last_message = message.message;
+                    u.last_message_date = message.created_at;
+
+                    return u;
+                }
+
+                //If the message is for group
+                if(
+                    message.group_id &&
+                    u.is_group &&
+                    u.id == message.group_id
+                ){
+                    u.last_message = message.message;
+                    u.last_message_date = message.created_at
+                    return u;
+                }
+
+                return u;
+            })
+        });
+    };
+
+    useEffect(() => {
+        const offCreated = on('message.created', messageCreated)
+
+        return () => {
+            offCreated();
+        }
+    }, [on]);
 
     useEffect(() => {
         setSortedConversations(
@@ -47,7 +86,7 @@ const ChartLayout = ({children}) => {
                 }
             )
         );
-    }, [localConversations])
+    }, [localConversations]);
 
     useEffect(() => {
         setLocalConversations(conversations)

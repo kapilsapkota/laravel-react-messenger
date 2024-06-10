@@ -1,7 +1,7 @@
 import { Head } from '@inertiajs/react';
 import ChatLayout from "@/Layouts/ChatLayout.jsx";
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout.jsx";
-import {useEffect, useRef, useState} from "react";
+import {useCallback, useEffect, useRef, useState} from "react";
 import {ChatBubbleLeftRightIcon} from "@heroicons/react/24/solid/index.js";
 import ConversationHeader from "@/Components/App/ConversationHeader.jsx";
 import MessageItem from "@/Components/App/MessageItem.jsx";
@@ -9,7 +9,10 @@ import MessageInput from "@/Components/App/MessageInput.jsx";
 import {useEventBus} from "@/EventBus.jsx";
 function Home({ selectedConversation = null,  messages = null }) {
     const [localMessages, setLocalMessages] = useState([]);
+    const loadMoreIntersect = useRef(null);
     const messageCtrRef = useRef(null)
+    const [noMoreMessages, setNoMoreMessages] = useState(false)
+    const [scrollFromBottom, setScrollFromBottom] = useState(0)
     const { on } = useEventBus()
 
     const messageCreated = (message) => {
@@ -31,6 +34,36 @@ function Home({ selectedConversation = null,  messages = null }) {
         }
     }
 
+    // const setScrollFromBottom = (value) => {
+    //
+    // }
+
+    const loadMoreMessages = useCallback(() => {
+        if(noMoreMessages){
+            return;
+        }
+        const firstMessage = localMessages[0];
+        axios.get(route('message.loadOlder', firstMessage.id))
+            .then(({data}) => {
+                if (data.data.length === 0){
+                    setNoMoreMessages(true)
+                    return;
+                }
+                //Calculate how much is scrolled from bottom
+                const scrollHeight = messageCtrRef.current.scrollHeight;
+                const scrollTop = messageCtrRef.current.scrollTop;
+                const clientHeight = messageCtrRef.current.clientHeight;
+                const tmpScrollFromBottom = scrollHeight - scrollTop - clientHeight;
+
+                setScrollFromBottom(tmpScrollFromBottom)
+
+                setLocalMessages((prevMessages) => {
+                    return [...data.data.reverse(), ...prevMessages];
+                });
+            })
+    }, [localMessages, noMoreMessages])
+
+
     useEffect(() => {
         setTimeout(() => {
             if(messageCtrRef.current){
@@ -41,13 +74,49 @@ function Home({ selectedConversation = null,  messages = null }) {
 
         const offCreated = on('message.created', messageCreated)
 
+        setScrollFromBottom(0);
+        setNoMoreMessages(false)
+
         return ()  => {
             offCreated();
         };
     }, [selectedConversation]);
+
     useEffect(() => {
         setLocalMessages(messages ? messages.data.reverse() : [])
     }, [messages]);
+
+    useEffect(() => {
+        if(messageCtrRef.current && scrollFromBottom !== null){
+            messageCtrRef.current.scrollTop =
+                messageCtrRef.current.scrollHeight -
+                messageCtrRef.current.offsetHeight -
+                scrollFromBottom;
+        }
+        if(noMoreMessages){
+            return;
+        }
+
+        const observer = new IntersectionObserver(
+            (entries)=>
+                        entries.forEach(
+                            (entry)=> entry.isIntersecting && loadMoreMessages()
+                            ),{
+                rootMargin : "0px 0px 250px 0px",
+            }
+        );
+
+        if(loadMoreIntersect.current){
+            setTimeout(()=>{
+                observer.observe(loadMoreIntersect.current)
+            })
+        }
+
+        return () => {
+            observer.disconnect()
+        }
+
+        }, [localMessages]);
 
     return (
         <>
@@ -77,6 +146,7 @@ function Home({ selectedConversation = null,  messages = null }) {
                     {/*    If Messages found, display them*/}
                         {localMessages.length > 0 && (
                             <div className="flex flex-1 flex-col">
+                                <div ref={loadMoreIntersect}></div>
                                 {localMessages.map((message) => (
                                     <MessageItem
                                         key={message.id}

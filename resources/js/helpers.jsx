@@ -4,16 +4,16 @@ export const formatMessageDateLong = (date) => {
 
     if(isToday(inputDate)){
         return inputDate.toLocaleDateString([],{
-           hour:  "2-digit", minute: "2-digit",
+           hour:  "2-digit", minute: "2-digit", hour12: true
         });
     }else if(isYesterday(inputDate)){
         return "Yesterday " +
         inputDate.toLocaleDateString([],{
-            hour:  "2-digit", minute: "2-digit",
+            hour:  "2-digit", minute: "2-digit", hour12: true
         });
     }else if(inputDate.getFullYear() === now.getFullYear()){
         return inputDate.toLocaleDateString([],{
-            day: "2-digit", month : "short"
+            day: "2-digit", month : "short", hour12: true
         })
     }else{
         return inputDate.toLocaleDateString();
@@ -23,16 +23,15 @@ export const formatMessageDateLong = (date) => {
 export const formatMessageDateShort = (date) => {
     const now = new Date()
     const inputDate = new Date(date)
-
     if(isToday(inputDate)){
         return inputDate.toLocaleDateString([],{
-            hour:  "2-digit", minute: "2-digit",
+            hour:  "2-digit", minute: "2-digit", hour12: true
         });
     }else if(isYesterday(inputDate)){
         return "Yesterday ";
     }else if(inputDate.getFullYear() === now.getFullYear()){
         return inputDate.toLocaleDateString([],{
-            day: "2-digit", month : "short"
+            day: "2-digit", month : "short", hour12: true
         })
     }else{
         return inputDate.toLocaleDateString();

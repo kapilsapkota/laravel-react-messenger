@@ -7,6 +7,8 @@ import {
     PhotoIcon
 } from "@heroicons/react/24/solid/index.js";
 import NewMessageInput from "@/Components/App/NewMessageInput.jsx";
+import EmojiPicker from "emoji-picker-react";
+import {Popover} from "@headlessui/react";
 
 const MessageInput = ({conversation = null}) => {
     const [newMessage, setNewMessage] = useState("")
@@ -14,6 +16,9 @@ const MessageInput = ({conversation = null}) => {
     const [messageSending, setMessageSending] = useState(false)
 
     const onSendClick = () => {
+        if(messageSending){
+            return;
+        }
         if(newMessage.trim() === ""){
             setInputErrorMessage("Please provide a message or upload attachments");
             setTimeout(()=> {
@@ -44,6 +49,22 @@ const MessageInput = ({conversation = null}) => {
             console.log(error)
             setMessageSending(false)
         })
+    }
+
+    const onLikeClick = () => {
+        if (messageSending){
+            return;
+        }
+        const data = {
+            message : "👍",
+        }
+        if(conversation.is_user){
+            data["receiver_id"]= conversation.id
+        } else if(conversation.is_group) {
+            data["group_id"] = conversation.id
+        }
+
+        axios.post(route("message.store"), data)
     }
 
 return (
@@ -80,10 +101,11 @@ return (
                 />
                 <button
                     onClick={onSendClick}
+                    disabled={messageSending}
                     className="btn btn-info rounded-l-none">
-                    {messageSending && (
-                        <span className="loading loading-spinner loading-xs"></span>
-                    )}
+                    {/*{messageSending && (*/}
+                    {/*    <span className="loading loading-spinner loading-xs"></span>*/}
+                    {/*)}*/}
                     <PaperAirplaneIcon className="w-6"/>
                     <span className="hidden sm:inline">Send</span>
                 </button>
@@ -93,13 +115,22 @@ return (
                 <p className="text-xs text-red-400">{inputErrorMessage}</p>
             )}
         </div>
-
         <div className="order-3 xs:order-3 p-2 flex">
-            <button className="p-1 text-gray-400 hover:text-gray-300">
-                <FaceSmileIcon className="h-6 w-6"/>
-            </button>
+            <Popover className="relative">
+                <Popover.Button className="p-1 text-gray-400 hover:text-gray-300">
+                    <FaceSmileIcon className="h-6 w-6"/>
+                </Popover.Button>
+                <Popover.Panel className="absolute z-10 right-0 bottom-full">
+                    <EmojiPicker theme="dark" onEmojiClick={(ev) => {
+                       setNewMessage(newMessage + ev.emoji)
+                    }}></EmojiPicker>
+                </Popover.Panel>
+            </Popover>
+            {/*<button className="p-1 text-gray-400 hover:text-gray-300">*/}
+            {/*    <FaceSmileIcon className="h-6 w-6"/>*/}
+            {/*</button>*/}
 
-            <button className="p-1 text-gray-400 hover:text-gray-300">
+            <button onClick={onLikeClick} className="p-1 text-gray-400 hover:text-gray-300">
                 <HandThumbUpIcon className="h-6 w-6"/>
             </button>
         </div>
