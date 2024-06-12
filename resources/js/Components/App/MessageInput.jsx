@@ -6,6 +6,7 @@ import {Popover} from "@headlessui/react";
 import {isAudio, isImage} from "@/helpers.jsx";
 import AttachmentPreview from "@/Components/App/AttachmentPreview.jsx";
 import CustomAudioPlayer from "@/Components/App/CustomAudioPlayer.jsx";
+import AudioRecorder from "@/Components/App/AudioRecorder.jsx";
 
 const MessageInput = ({conversation = null}) => {
     const [newMessage, setNewMessage] = useState("");
@@ -91,6 +92,10 @@ const MessageInput = ({conversation = null}) => {
         axios.post(route("message.store"), data)
     }
 
+    const recordedAudioReady = (file, url) => {
+      setChosenFiles((prevFiles) => [...prevFiles ,{ file, url }])
+    }
+
 return (
     <div className="flex flex-wrap items-start border-t border-slate-700 py-3">
         <div className="order-2 flex-1 xs:flex-none xs:order-1 py-2">
@@ -104,7 +109,6 @@ return (
                 />
             </button>
 
-
             <button className={"p-1 text-gray-400 hover:text-gray-300 relative"}>
                 <PhotoIcon className={"w-6"}/>
                 <input
@@ -115,6 +119,8 @@ return (
                     className={"absolute left-0 top-0 right-0 bottom-0 z-20 opacity-0 cursor-pointer"}
                 />
             </button>
+
+            <AudioRecorder fileReady={recordedAudioReady} />
         </div>
 
         <div className="order-1 px-3 xs:p-0 min-w-[220px] basis-full xs:basis-0
