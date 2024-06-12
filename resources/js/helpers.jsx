@@ -43,7 +43,7 @@ export const isToday = (date) => {
     return (date.getDate() === today.getDate()
         && date.getMonth() === today.getMonth()
         && date.getFullYear() === today.getFullYear())
-}
+};
 
 export const isYesterday = (date) => {
     const yesterday = new Date();
@@ -51,6 +51,55 @@ export const isYesterday = (date) => {
     return (date.getDate() === yesterday.getDate()
         && date.getMonth() === yesterday.getMonth()
         && date.getFullYear() === yesterday.getFullYear())
-}
+};
+
+export const isImage = (attachment) =>{
+    let mime =  attachment.mime || attachment.type ;
+    mime = mime.split("/")
+    return mime[0].toLowerCase() === "image";
+};
+
+export const isAudio = (attachment) => {
+    let mime =  attachment.mime || attachment.type ;
+    mime = mime.split("/")
+    return mime[0].toLowerCase() === "audio";
+};
+
+export const isVideo = (attachment) => {
+    let mime =  attachment.mime || attachment.type ;
+    mime = mime.split("/")
+    return mime[0].toLowerCase() === "video";
+};
+
+export const isPDF = (attachment) => {
+    let mime =  attachment.mime || attachment.type ;
+    return mime === "application/pdf";
+};
+
+export const canPreview = (attachment) => {
+    return (
+        isImage(attachment) ||
+            isAudio(attachment) ||
+            isVideo(attachment) ||
+            isPDF(attachment)
+    );
+};
+
+export const formatBytes = (bytes, decimals = 2) => {
+    if(bytes === 0) return "0 Bytes";
+    const k = 1024;
+    const dm = decimals < 0 ? 0 : decimals
+    const sizes = ["Bytes", "KB", "MB", "GB"];
+    let i = 0;
+    let size = bytes;
+    while (size >= k){
+        size/=k;
+        i++;
+    }
+
+    return parseFloat(size.toFixed(dm)) + " " + sizes[i];
+};
+
+
 
 

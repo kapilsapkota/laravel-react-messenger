@@ -7,11 +7,15 @@ import ConversationHeader from "@/Components/App/ConversationHeader.jsx";
 import MessageItem from "@/Components/App/MessageItem.jsx";
 import MessageInput from "@/Components/App/MessageInput.jsx";
 import {useEventBus} from "@/EventBus.jsx";
+import AttachmentPreviewModal from "@/Components/App/AttachmentPreviewModal.jsx";
+
 function Home({ selectedConversation = null,  messages = null }) {
     const [localMessages, setLocalMessages] = useState([]);
     const loadMoreIntersect = useRef(null);
     const messageCtrRef = useRef(null)
     const [noMoreMessages, setNoMoreMessages] = useState(false)
+    const [showAttachmentPreview, setShowAttachmentPreview] = useState(false)
+    const [previewAttachment, setPreviewAttachment] = useState({})
     const [scrollFromBottom, setScrollFromBottom] = useState(0)
     const { on } = useEventBus()
 
@@ -33,10 +37,6 @@ function Home({ selectedConversation = null,  messages = null }) {
             setLocalMessages((prevMessages) => [...prevMessages, message])
         }
     }
-
-    // const setScrollFromBottom = (value) => {
-    //
-    // }
 
     const loadMoreMessages = useCallback(() => {
         if(noMoreMessages){
@@ -63,6 +63,13 @@ function Home({ selectedConversation = null,  messages = null }) {
             })
     }, [localMessages, noMoreMessages])
 
+    const onAttachmentClick = (attachments, ind) => {
+        setPreviewAttachment({
+            attachments,
+            ind,
+        });
+        setShowAttachmentPreview(true)
+    };
 
     useEffect(() => {
         setTimeout(() => {
@@ -151,6 +158,7 @@ function Home({ selectedConversation = null,  messages = null }) {
                                     <MessageItem
                                         key={message.id}
                                         message={message}
+                                        attachmentClick={onAttachmentClick}
                                     />
                                 ))}
                             </div>
@@ -160,9 +168,17 @@ function Home({ selectedConversation = null,  messages = null }) {
                     <MessageInput conversation={selectedConversation} />
                 </>
             )}
+
+            {previewAttachment.attachments && (
+                <AttachmentPreviewModal
+                    attachments ={previewAttachment.attachments}
+                    index={previewAttachment.ind}
+                    show={showAttachmentPreview}
+                    onClose={() => setShowAttachmentPreview(false)}
+                />
+            )}
         </>
-    );
-}
+    )}
 
 Home.layout = (page) => {
     return <AuthenticatedLayout user={page.props.auth.user}>
