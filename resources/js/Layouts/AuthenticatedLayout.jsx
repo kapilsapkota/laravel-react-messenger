@@ -6,6 +6,7 @@ import ResponsiveNavLink from '@/Components/ResponsiveNavLink';
 import {Link, usePage} from '@inertiajs/react';
 import {useEventBus} from "@/EventBus.jsx";
 import Toast from "@/Components/App/Toast.jsx";
+import NewMessageNotification from "@/Components/App/NewMessageNotification.jsx";
 
 export default function Authenticated({header, children }) {
     const page = usePage();
@@ -182,6 +183,7 @@ export default function Authenticated({header, children }) {
                 {children}
             </div>
             <Toast />
+            <NewMessageNotification />
         </>
     );
 }
