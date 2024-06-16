@@ -19,7 +19,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
         ->name('dashboard');
     Route::get('/user/{user}',[\App\Http\Controllers\MessageController::class, 'byUser'])
         ->name('chat.user');
-    Route::get('/group/{user}',[\App\Http\Controllers\MessageController::class, 'byGroup'])
+    Route::get('/group/{group}',[\App\Http\Controllers\MessageController::class, 'byGroup'])
         ->name('chat.group');
     Route::post('/message', [\App\Http\Controllers\MessageController::class, 'store'])
         ->name('message.store');

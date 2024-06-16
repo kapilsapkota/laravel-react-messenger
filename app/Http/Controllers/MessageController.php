@@ -111,8 +111,26 @@ class MessageController extends Controller
         if($message->sender_id !== auth()->id()){
             return response()->json(['message' => 'Forbidden'], 403);
         }
+
+        $group = null;
+        $conversation = null;
+
+        //Check if the message is the group message
+        if($message->group_id){
+            $group = Group::where('last_message_id', $message->id)->first();
+        } else {
+            $conversation = Conversation::where('last_message_id', $message->id)->first();
+        }
         $message->delete();
 
-        return response('', 204);
+        if($group){
+            $group = Group::find($group->id);
+            $lastMessage = $group->lastMessage;
+        }else if($conversation){
+            $conversation = Conversation::find($conversation->id);
+            $lastMessage = $conversation->lastMessage;
+        }
+
+        return response()->json(['message' => isset($lastMessage) ? new MessageResource($lastMessage) : null]);
     }
 }

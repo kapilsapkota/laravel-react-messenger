@@ -11,7 +11,7 @@ const ConversationItem = ({
                           })  => {
     const page = usePage();
     let currentUser = page.props.auth.user;
-    let classes = 'border-transparent';
+    let classes = ' border-transparent';
     if(selectedConversation){
         if(!selectedConversation.is_group &&
             !conversation.is_group &&

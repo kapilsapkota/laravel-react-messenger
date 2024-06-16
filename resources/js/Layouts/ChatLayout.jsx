@@ -4,6 +4,7 @@ import TextInput from "@/Components/TextInput.jsx";
 import {PencilSquareIcon} from "@heroicons/react/16/solid/index.js";
 import ConversationItem from "@/Components/App/ConversationItem.jsx";
 import {useEventBus} from "@/EventBus.jsx";
+import GroupModal from "@/Components/App/GroupModal.jsx";
 const ChartLayout = ({children}) => {
     const page = usePage();
     const conversations = page.props.conversations;
@@ -11,10 +12,9 @@ const ChartLayout = ({children}) => {
     const [localConversations, setLocalConversations] = useState([])
     const [sortedConversations, setSortedConversations] = useState([])
     const [onlineUsers, setOnlineUsers] = useState({})
+    const [showGroupModal, setShowGroupModal] = useState(false)
     const {on} = useEventBus();
     const isUserOnline = (userId) => onlineUsers[userId]
-    console.log("conversation", conversations)
-    console.log("selectedConversation", selectedConversation)
 
     const onSearch = (ev) => {
         const search = ev.target.value.toLowerCase();
@@ -53,11 +53,24 @@ const ChartLayout = ({children}) => {
         });
     };
 
+    const messageDeleted = ({ prevMessage })  => {
+        if(!prevMessage){
+            return;
+        }
+        messageCreated(prevMessage)
+    };
+
     useEffect(() => {
         const offCreated = on('message.created', messageCreated)
+        const offDeleted = on('message.deleted', messageDeleted)
+        const offModalShow = on('GroupModal.show', (group) => {
+            setShowGroupModal(true);
+        })
 
         return () => {
             offCreated();
+            offDeleted();
+            offModalShow();
         }
     }, [on]);
 
@@ -93,9 +106,6 @@ const ChartLayout = ({children}) => {
     }, [conversations]);
 
     useEffect(() => {
-        console.log('ChatLayout Mounted')
-        console.log(conversations)
-        console.log(selectedConversation)
         Echo.join('online')
             .here((users)=>
             {
@@ -136,8 +146,11 @@ const ChartLayout = ({children}) => {
                     <div className="flex items-center justify-between text-gray-200 py-2 px-3 text-xl font-medium">
                         My Conversations
                         <div className="tooltip tooltip-left" data-tip={'Create New Group'}>
-                            <button className="text-gray-400 hover:text-gray-200">
-                                <PencilSquareIcon className="w-4 h-4 inline-block ml-2"></PencilSquareIcon>
+                            <button
+                                onClick={(ev) => setShowGroupModal(true)}
+                                className="text-gray-400 hover:text-gray-200"
+                            >
+                                <PencilSquareIcon className="w-4 h-4 inline-block ml-2" />
                             </button>
                         </div>
                     </div>
@@ -156,7 +169,6 @@ const ChartLayout = ({children}) => {
                             conversation={conversation}
                             online={!!isUserOnline(conversation.id)}
                             selectedConversation={selectedConversation}>
-
                             </ConversationItem>
                         ))}
                     </div>
@@ -165,6 +177,10 @@ const ChartLayout = ({children}) => {
                     {children}
                 </div>
             </div>
+            <GroupModal
+                show={showGroupModal}
+                onClose={() => setShowGroupModal(false)}
+            />
         </>
     );
 };
