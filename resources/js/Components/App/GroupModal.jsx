@@ -40,8 +40,8 @@ export default function GroupModal({show = false, onClose = () => {}}){
         }
         post(route("group.store"), {
             onSuccess : () => {
-                emit("toast.show", `Group "${data.name}" was created`);
                 closeModal();
+                emit("toast.show", `Group "${data.name}" was created`);
             }
         })
     }

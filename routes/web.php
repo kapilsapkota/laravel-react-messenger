@@ -32,7 +32,7 @@ Route::middleware(['auth', 'verified'])->group(function (){
 
     Route::post('/group', [GroupController::class, 'store'])
         ->name('group.store');
-    Route::post('/group/{group}', [GroupController::class, 'update'])
+    Route::put('/group/{group}', [GroupController::class, 'update'])
         ->name('group.update');
     Route::delete('/group/{group}', [GroupController::class, 'destroy'])
         ->name('group.destroy');
