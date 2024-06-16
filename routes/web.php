@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\GroupController;
+use App\Http\Controllers\MessageController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
@@ -17,16 +19,23 @@ use Inertia\Inertia;
 Route::middleware(['auth', 'verified'])->group(function (){
     Route::get('/', [\App\Http\Controllers\HomeController::class, 'home'])
         ->name('dashboard');
-    Route::get('/user/{user}',[\App\Http\Controllers\MessageController::class, 'byUser'])
+    Route::get('/user/{user}',[MessageController::class, 'byUser'])
         ->name('chat.user');
-    Route::get('/group/{group}',[\App\Http\Controllers\MessageController::class, 'byGroup'])
+    Route::get('/group/{group}',[MessageController::class, 'byGroup'])
         ->name('chat.group');
-    Route::post('/message', [\App\Http\Controllers\MessageController::class, 'store'])
+    Route::post('/message', [MessageController::class, 'store'])
         ->name('message.store');
-    Route::delete('/message/{message}', [\App\Http\Controllers\MessageController::class, 'destroy'])
+    Route::delete('/message/{message}', [MessageController::class, 'destroy'])
         ->name('message.destroy');
-    Route::get('/message/older/{message}',[\App\Http\Controllers\MessageController::class,'loadOlder'])
+    Route::get('/message/older/{message}',[MessageController::class,'loadOlder'])
         ->name('message.loadOlder');
+
+    Route::post('/group', [GroupController::class, 'store'])
+        ->name('group.store');
+    Route::post('/group/{group}', [GroupController::class, 'update'])
+        ->name('group.update');
+    Route::delete('/group/{group}', [GroupController::class, 'destroy'])
+        ->name('group.destroy');
 });
 
 //Route::get('/dashboard', function () {
