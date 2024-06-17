@@ -41,7 +41,7 @@ export default function UpdateProfileInformation({ mustVerifyEmail, status, clas
                         id="avatar"
                         type="file"
                         accept="image/*"
-                        className="file-input file-input-bordered file-input-success w-full max-w-xs"
+                        className="file-input file-input-md file-input-bordered file-input-primary w-full"
                         onChange={(e) => setData("avatar", e.target.files[0])}
                     />
                     <p className="mt-1 text-gray-400">Please upload square picture. Ex. 512px&times;512px</p>

@@ -10,6 +10,7 @@ import NewMessageNotification from "@/Components/App/NewMessageNotification.jsx"
 import PrimaryButton from "@/Components/PrimaryButton.jsx";
 import {UserPlusIcon} from "@heroicons/react/24/solid/index.js";
 import NewUserModal from "@/Components/App/NewUserModal.jsx";
+import UserAvatar from "@/Components/App/UserAvatar.jsx";
 
 export default function Authenticated({header, children }) {
     const page = usePage();
@@ -125,6 +126,7 @@ export default function Authenticated({header, children }) {
                                                 type="button"
                                                 className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-gray-500 dark:text-gray-400 bg-white dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none transition ease-in-out duration-150"
                                             >
+                                                {/*<UserAvatar user={user} />*/}
                                                 {user.name}
 
                                                 <svg
