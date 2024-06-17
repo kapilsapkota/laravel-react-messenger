@@ -2,21 +2,22 @@ import {Menu, Transition} from "@headlessui/react";
 import {EllipsisVerticalIcon,LockClosedIcon, LockOpenIcon, ShieldCheckIcon, UserIcon} from "@heroicons/react/24/solid/index.js";
 import axios from "axios";
 import {Fragment} from "react";
+import {useEventBus} from "@/EventBus.jsx";
 
 export default function UserOptionsDropdown({conversation}){
 
+    const {emit} = useEventBus();
     const changeUserRole = () => {
-        console.log('Change User Role')
         if(!conversation.is_user){
             return;
         }
 
         axios.post(route('user.changeRole', conversation.id))
             .then((res) => {
-               console.log( res.data)
+              emit('toast.show', res.data.message)
             })
             .catch((err) => {
-                console.error(err)
+                console.log(err)
             })
     }
 
@@ -27,7 +28,7 @@ export default function UserOptionsDropdown({conversation}){
         }
         axios.post(route('user.blockUnblock', conversation.id))
             .then((res) => {
-                console.log( res.data)
+                emit('toast.show', res.data.message)
             })
             .catch((err) => {
                 console.error(err)

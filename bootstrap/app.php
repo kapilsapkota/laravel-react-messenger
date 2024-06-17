@@ -17,7 +17,8 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
         ]);
         $middleware->alias([
-            'admin' => \App\Http\Middleware\AdminUserMiddleware::class
+            'admin' => \App\Http\Middleware\AdminUserMiddleware::class,
+            'active' => \App\Http\Middleware\ActiveUserMiddleware::class
         ]);
         //
     })

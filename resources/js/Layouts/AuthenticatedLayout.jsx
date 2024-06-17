@@ -108,7 +108,7 @@ export default function Authenticated({header, children }) {
                             <div className="hidden sm:flex sm:items-center sm:ms-6">
                                 <div className="ms-3 flex relative">
 
-                                    {user.is_admin && (
+                                    { user.is_admin && (
                                         <PrimaryButton
                                             onClick={ (ev) =>
                                                 setShowNewUserModal(true)}
