@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsToMany;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class User extends Authenticatable
 {
@@ -94,6 +95,7 @@ class User extends Authenticatable
             'blocked_at' => $this->blocked_at,
             'last_message' => $this->last_message,
             'last_message_date' => $this->last_message_date.' UTC',
+            'avatar_url'=> $this->avatar ? Storage::url($this->avatar) : null,
         ];
 
     }

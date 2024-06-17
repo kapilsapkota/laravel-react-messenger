@@ -36,6 +36,16 @@ Route::middleware(['auth', 'verified'])->group(function (){
         ->name('group.update');
     Route::delete('/group/{group}', [GroupController::class, 'destroy'])
         ->name('group.destroy');
+
+    Route::middleware(['admin'])->group(function (){
+        Route::post('/user', [\App\Http\Controllers\UserController::class, 'store'])
+            ->name('user.store');
+        Route::post('/user/change-role/{user}', [\App\Http\Controllers\UserController::class, 'changeRole'])
+            ->name('user.changeRole');
+        Route::post('/user/block-unblock/{user}', [\App\Http\Controllers\UserController::class, 'blockUnblock'])
+            ->name('user.blockUnblock');
+
+    });
 });
 
 //Route::get('/dashboard', function () {
